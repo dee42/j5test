@@ -97,7 +97,7 @@ class IterativeTester(object):
             for dim in dims:
                 dim.teardown()
                 
-            teardownmeth = getattr(cls,"setup_class_" + prefix,None)
+            teardownmeth = getattr(cls,"teardown_class_" + prefix,None)
             if callable(teardownmeth):
                 for varnames in cls.permuteVars(prefix):
                     args = [dim.getValue(name) for name, dim in zip(varnames,cls.DIMENSIONS[prefix])]
