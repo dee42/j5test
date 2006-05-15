@@ -3,6 +3,8 @@
 
 __all__ = ['IterativeTester','Dimension']
 
+import copy
+
 def combinations(*args):
     """Generate all combinations of items from argument lists.
     """
@@ -25,53 +27,85 @@ class IterativeTester(object):
     Parent class for test classes which want to have methods iterated over
     sets of parameters.
     """
-    
+
     __metaclass__ = IterativeTesterMetaClass
-    
+
     # Dictionary defining iterative tests. Keys are the prefixes of the
     # methods to be iterated with different parameters. Values are arrays
     # of Dimension objects which need to be iterated over.
     DIMENSIONS = {}
-    
+
     @classmethod
     def makeIterativeTests(cls,dct):
         """
         Create all iterative tests specified in DIMENSIONS dictionary and
         remove processed methods.
         """
+        # need to use the dct for this class because we're updating cls.__dict__
+        # by adding new methods as we go
+        dicts = [getattr(basecls,"__dict__",{}) for basecls in cls.__mro__ if not basecls is cls]
+        dicts.insert(0,dct)
+
         for prefix in cls.DIMENSIONS.keys():
-            for methname, meth in dct.iteritems():
-                if methname.startswith(prefix) and callable(meth):
-                    cls.makeIterativeTestsForMethod(prefix,methname,meth)
-                                        
-    @classmethod    
+            for clsdct in dicts:
+                for methname, meth in clsdct.iteritems():
+                    if methname.startswith(prefix) and callable(meth):
+                        cls.makeIterativeTestsForMethod(prefix,methname,meth)
+
+            for dim in cls.DIMENSIONS[prefix]:
+                cls.makeFailedConditionTestsForDim(prefix, dim)
+
+    @classmethod
     def makeIterativeTestsForMethod(cls,prefix,methname,meth):
         """
         Create the iterative tests for a single method.
         """
         for varnames in cls.permuteVars(prefix):
             cls.createTestMethod(prefix,varnames,methname,meth)
-                
+
     @classmethod
     def createTestMethod(cls,prefix,varnames,oldmethname,oldmeth):
         """
         Add a new test method.
         """
         newname = "test" + oldmethname[len(prefix):] + "_" + "_".join(varnames)
-        
+
         # don't overwrite existing methods
         if cls.__dict__.has_key(newname):
             return
 
         def newmeth(self):
-            args = [dim.getValue(name) for name, dim in zip(varnames,cls.DIMENSIONS[prefix])]
+            args = cls.getMethodArgs(prefix,varnames)
             return oldmeth(self,*args)
 
         newmeth.func_name = newname
         newmeth.func_doc = oldmeth.func_doc
-        newmeth.func_dict = oldmeth.func_dict
-                
+        newmeth.func_dict = oldmeth.func_dict.copy()
+        newmeth.iterativetestprefix = prefix
+        newmeth.iterativetestvarnames = varnames
+
         setattr(cls,newname,newmeth)
+
+    @classmethod
+    def makeFailedConditionTestsForDim(cls, prefix, dim):
+        failed_conditions = dim.getFailedConditions()
+        for name, message in failed_conditions.iteritems():
+            cls.createFailMessageTest(prefix, name, message)
+
+    @classmethod
+    def createFailMessageTest(cls, prefix, conditionname, message):
+        """
+        Add a failing test method which prints a message
+        """
+        newname = "test_"+prefix+"_"+conditionname
+
+        def failmeth(self):
+            print message
+            assert False
+
+        failmeth.func_name = newname
+
+        setattr(cls, newname, failmeth)
 
     @classmethod
     def permuteVars(cls,prefix):
@@ -79,29 +113,64 @@ class IterativeTester(object):
             yield varnames
 
     @classmethod
+    def getMethodArgs(cls,prefix,varnames):
+        return [dim.getValue(name) for name, dim in zip(varnames,cls.DIMENSIONS[prefix])]
+
+    @classmethod
     def setup_class(cls):
         for prefix, dims in cls.DIMENSIONS.iteritems():
             for dim in dims:
                 dim.setup()
-                
+
             setupmeth = getattr(cls,"setup_class_" + prefix,None)
             if callable(setupmeth):
                 for varnames in cls.permuteVars(prefix):
-                    args = [dim.getValue(name) for name, dim in zip(varnames,cls.DIMENSIONS[prefix])]
+                    args = cls.getMethodArgs(prefix,varnames)
                     setupmeth(*args)
-                
-                
+
+
     @classmethod
     def teardown_class(cls):
         for prefix, dims in cls.DIMENSIONS.iteritems():
             for dim in dims:
                 dim.teardown()
-                
+
             teardownmeth = getattr(cls,"teardown_class_" + prefix,None)
             if callable(teardownmeth):
                 for varnames in cls.permuteVars(prefix):
-                    args = [dim.getValue(name) for name, dim in zip(varnames,cls.DIMENSIONS[prefix])]
+                    args = cls.getMethodArgs(prefix,varnames)
                     teardownmeth(*args)
+
+    def setup_method(self, method):
+        if hasattr(method, "iterativetestprefix"):
+            prefix = method.iterativetestprefix
+            varnames = method.iterativetestvarnames
+            setup_method = getattr(self,"setup_method_" + prefix, None)
+
+            # let the dimension objects do any pre-method setup they need
+            for varname, dim in zip(varnames,self.__class__.DIMENSIONS[prefix]):
+                dim.setup_method(varname)
+
+            # call the prefix specific method setup
+            if callable(setup_method):
+                args = self.__class__.getMethodArgs(prefix,varnames)
+                setup_method(method,*args)
+
+
+    def teardown_method(self, method):
+        if hasattr(method, "iterativetestprefix"):
+            prefix = method.iterativetestprefix
+            varnames = method.iterativetestvarnames
+            teardown_method = getattr(self,"teardown_method_" + prefix, None)
+
+            # call the prefix specific method teardown
+            if callable(teardown_method):
+                args = self.__class__.getMethodArgs(prefix,varnames)
+                teardown_method(method,*args)
+
+            # let the dimension objects do any post-method teardown they need
+            for varname, dim in zip(varnames,self.__class__.DIMENSIONS[prefix]):
+                dim.teardown_method(varname)
 
 
 class Dimension(object):
@@ -121,21 +190,37 @@ class Dimension(object):
            Must be callable as soon as the object has been created.
         """
         return self._resources.keys()
-    
+
     def getValue(self,name):
         """Return the value of a named resource.
            Need only be callable after the objects .setup() method has been called.
         """
         return self._resources[name]
-        
+
+    def getFailedConditions(self):
+        """Return a dictionary mapping failed condition names to error messages
+           Must be callable as soon as the object has been created
+        """
+        return getattr(self, "_failed_conditions", {})
+
     def setup(self):
         """Setup the held resources.
            Does nothing by default.
         """
         pass
-        
+
     def teardown(self):
         """Clean-up and release the held resources.
            Does nothing by default.
+        """
+        pass
+
+    def setup_method(self,varname):
+        """Called before the resource varname is used in a test method.
+        """
+        pass
+
+    def teardown_method(self,varname):
+        """Called after the resource varname was used in a test method.
         """
         pass
