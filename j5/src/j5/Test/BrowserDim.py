@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from Test import IEBrowser, TwillBrowser
-from Test import IterativeTester
+from j5.Test import IEBrowser, TwillBrowser
+from j5.Test import IterativeTester
 import sys
 
 class BrowserDim(IterativeTester.Dimension):
@@ -30,5 +30,5 @@ class BrowserDim(IterativeTester.Dimension):
 
     def teardown_method(self, browsername):
         self._resources[browsername].quit()
-        
+
 
