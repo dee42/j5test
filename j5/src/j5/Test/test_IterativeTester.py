@@ -105,7 +105,7 @@ class TestExample(IterativeTester):
 
 class IterativeTesterA(IterativeTester):
     def someprefix_test1(self,web):
-        assert true
+        assert True
 
 class IterativeTesterB(IterativeTesterA):
     DIMENSIONS = { 'someprefix' : [WebServer_Dim1()] }
