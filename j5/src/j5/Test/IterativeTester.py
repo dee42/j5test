@@ -4,6 +4,7 @@
 __all__ = ['IterativeTester','Dimension']
 
 import copy
+import sys
 from j5.Basic import DictUtils
 
 def combinations(*args):
@@ -80,6 +81,9 @@ class IterativeTester(object):
             return
 
         def newmeth(self):
+            if self.iterdata.get('_iterativetest_setup_class_failed',None) is not None:
+                e, trace = self.iterdata.get('_iterativetest_setup_class_failed')
+                raise e, None, trace
             args = cls.getMethodArgs(prefix,varnames)
             return oldmeth(self,*args)
 
@@ -137,8 +141,13 @@ class IterativeTester(object):
             if callable(setupmeth):
                 for varnames in cls.permuteVars(prefix):
                     cls.iterdata = cls._METHOD_DATA[(prefix,tuple(varnames))]
+
                     args = cls.getMethodArgs(prefix,varnames)
-                    setupmeth(*args)
+                    try:
+                        setupmeth(*args)
+                    except Exception, e:
+                        cls.iterdata['_iterativetest_setup_class_failed'] = (e,sys.exc_info()[2])
+
                     del cls.iterdata
 
     @classmethod
@@ -149,8 +158,16 @@ class IterativeTester(object):
             if callable(teardownmeth):
                 for varnames in cls.permuteVars(prefix):
                     cls.iterdata = cls._METHOD_DATA[(prefix,tuple(varnames))]
+
+                    if cls.iterdata.get('_iterativetest_setup_class_failed',None) is not None:
+                        continue
+
                     args = cls.getMethodArgs(prefix,varnames)
-                    teardownmeth(*args)
+                    try:
+                        teardownmeth(*args)
+                    except Exception, e:
+                        cls.iterdata['_iterativetest_teardown_class_failed'] = (e,sys.exc_info()[2])
+
                     del cls.iterdata
 
             # remove attribute dictionaries
