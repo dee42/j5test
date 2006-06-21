@@ -4,6 +4,7 @@
 __all__ = ['IterativeTester','Dimension']
 
 import copy
+from j5.Basic import DictUtils
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
@@ -34,6 +35,10 @@ class IterativeTester(object):
     # methods to be iterated with different parameters. Values are arrays
     # of Dimension objects which need to be iterated over.
     DIMENSIONS = {}
+
+    # Dictionary for storing data used by test methods with a particular
+    # prefix and set of iterated over parameters.
+    _METHOD_DATA = {}
 
     @classmethod
     def makeIterativeTests(cls,dct):
@@ -119,33 +124,51 @@ class IterativeTester(object):
     @classmethod
     def setup_class(cls):
         for prefix, dims in cls.DIMENSIONS.iteritems():
+            # call dim setup methods
             for dim in dims:
                 dim.setup()
 
+            # create attribute dictionaries for use as self.iterdata values
+            for varnames in cls.permuteVars(prefix):
+                cls._METHOD_DATA[(prefix,tuple(varnames))] = DictUtils.attrdict()
+
+            # call prefix's class setup methods
             setupmeth = getattr(cls,"setup_class_" + prefix,None)
             if callable(setupmeth):
                 for varnames in cls.permuteVars(prefix):
+                    cls.iterdata = cls._METHOD_DATA[(prefix,tuple(varnames))]
                     args = cls.getMethodArgs(prefix,varnames)
                     setupmeth(*args)
-
+                    del cls.iterdata
 
     @classmethod
     def teardown_class(cls):
         for prefix, dims in cls.DIMENSIONS.iteritems():
-            for dim in dims:
-                dim.teardown()
-
+            # call prefix's class teardown methods
             teardownmeth = getattr(cls,"teardown_class_" + prefix,None)
             if callable(teardownmeth):
                 for varnames in cls.permuteVars(prefix):
+                    cls.iterdata = cls._METHOD_DATA[(prefix,tuple(varnames))]
                     args = cls.getMethodArgs(prefix,varnames)
                     teardownmeth(*args)
+                    del cls.iterdata
+
+            # remove attribute dictionaries
+            for varnames in cls.permuteVars(prefix):
+                del cls._METHOD_DATA[(prefix,tuple(varnames))]
+
+            # call dim teardown methods
+            for dim in dims:
+                dim.teardown()
 
     def setup_method(self, method):
         if hasattr(method, "iterativetestprefix"):
             prefix = method.iterativetestprefix
             varnames = method.iterativetestvarnames
             setup_method = getattr(self,"setup_method_" + prefix, None)
+
+            # get self.iterdata
+            self.iterdata = self.__class__._METHOD_DATA[(prefix,tuple(varnames))]
 
             # let the dimension objects do any pre-method setup they need
             for varname, dim in zip(varnames,self.__class__.DIMENSIONS[prefix]):
@@ -171,6 +194,9 @@ class IterativeTester(object):
             # let the dimension objects do any post-method teardown they need
             for varname, dim in zip(varnames,self.__class__.DIMENSIONS[prefix]):
                 dim.teardown_method(varname)
+
+            # unset self.iterdata
+            del self.iterdata
 
 
 class Dimension(object):

@@ -56,6 +56,13 @@ class TestExample(IterativeTester):
         else:
             self.checkdb(db)
 
+    def dbonly_test_iterdata(self,db):
+        assert self.iterdata.db == db
+
+    def webdb_test_iterdata(self,web,db):
+        assert self.iterdata.db == db
+        assert self.iterdata.web == web
+
     def webdb_test_setupmethod(self, webserver, db):
         assert self.inwebdb
         assert hasattr(self, "methodname")
@@ -87,10 +94,13 @@ class TestExample(IterativeTester):
         self.methodname = method.__name__
         self.expectedweb = webserver
         self.expecteddb = db
+        self.iterdata.web = webserver
+        self.iterdata.db = db
 
     def setup_method_dbonly_test(self, method, db):
         print "Setup method for dbonly..."
         print "\t", method.iterativetestprefix
+        self.iterdata.db = db
 
     def teardown_method_webdb_test(self, method, webserver, db):
         print "Teardown method for webdb..."
