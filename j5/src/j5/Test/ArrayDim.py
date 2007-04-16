@@ -7,4 +7,4 @@ class ArrayDim(Dimension):
         self._failed_conditions = {}
         for num, member in enumerate(initarray):
             self._resources[str(num)] = member
-    
+

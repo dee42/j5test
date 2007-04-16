@@ -222,7 +222,7 @@ class Dimension(object):
        to provide a list of names for the available resources and .getValue()
        to allow the resource associated with a name to be fetched. Overriding
        setup and teardown is optional.
-       
+
        For convenience, .getNames() and .getValue() return the resources and
        names from a name <-> resource diciontary held in self._resources, but
        sub-classes should feel free to override these if necessary.
