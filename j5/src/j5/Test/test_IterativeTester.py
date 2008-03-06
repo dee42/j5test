@@ -81,8 +81,7 @@ class TestExample(IterativeTester):
     def setup_class_webdb_test(cls,webserver,db):
         print "Setup class:", webserver, db
 
-    @classmethod
-    def testSomeOtherThing(cls):
+    def testSomeOtherThing(self):
         assert True
 
     def setup_method_webdb_test(self, method, webserver, db):
