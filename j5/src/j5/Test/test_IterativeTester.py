@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+t -*- coding: utf-8 -*-
 # Copyright 2006 St James Software
 
 """Tests for the IterativeTester framework. Also serves as a usage example.
@@ -12,7 +12,7 @@
 """
 
 from IterativeTester import IterativeTester, Dimension
-from py import test
+from j5.Test.Utils import raises
 
 #
 # Dimensions
@@ -52,7 +52,7 @@ class TestExample(IterativeTester):
     def dbonly_test_C(self,db):
         print "C", db
         if db != 3:
-            assert test.raises(AssertionError, self.checkdb, db)
+            assert raises(AssertionError, self.checkdb, db)
         else:
             self.checkdb(db)
 
