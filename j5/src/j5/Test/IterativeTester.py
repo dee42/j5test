@@ -215,7 +215,6 @@ class IterativeTester(object):
             # unset self.iterdata
             del self.iterdata
 
-
 class Dimension(object):
     """A collection of resources (databases, webservers or whatever) for
        IterativeTesters to access. Sub-classes need to override .getNames()
