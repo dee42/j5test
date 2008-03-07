@@ -1,4 +1,4 @@
-t -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright 2006 St James Software
 
 """Tests for the IterativeTester framework. Also serves as a usage example.
