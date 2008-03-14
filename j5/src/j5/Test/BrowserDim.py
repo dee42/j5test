@@ -12,8 +12,6 @@ def selenium_can_find(browser_name):
 class BrowserDim(IterativeTester.Dimension):
     seleniumHost = "localhost"
     seleniumPort = 4444
-    # TODO: integrate this with the web server test runner
-    browserURL = "http://localhost:8080/"
     def __init__(self):
         """iterates over supported browsers and runs tests on each of them"""
         browsernames = []
@@ -34,7 +32,14 @@ class BrowserDim(IterativeTester.Dimension):
         pass
 
     def setup_method(self, browsername):
-        selenium_runner = selenium.selenium(self.seleniumHost, self.seleniumPort, "*%s" % browsername, self.browserURL)
+        # FIXME: provide a SANE way to pass in the config and use it to set the host and port for browserURL
+        import inspect
+        frame = inspect.currentframe()
+        # browserURL = "http://%s:%s/" % (browserHost, browserPort)
+        # this is designed specifically for j5.Control.test_WebServer
+        # FIXME: This is obviously abysmal
+        browserURL = frame.f_back.f_locals["self"].get_webtest_url()
+        selenium_runner = selenium.selenium(self.seleniumHost, self.seleniumPort, "*%s" % browsername, browserURL)
         selenium_runner.start()
         self._resources[browsername] = selenium_runner
 
