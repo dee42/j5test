@@ -10,6 +10,7 @@ try:
     from nose.plugins.skip import SkipTest as NoseSkipped
 except ImportError:
     PyTextSkipped = object
+import sys
 
 def raises(ExpectedException, target, *args, **kwargs):
     """raise AssertionError, if target code does not raise the expected exception"""
@@ -55,10 +56,27 @@ def skip(msg="unknown reason"):
 
 def if_module(ConditionalModule, module_name=''):
     """A decorator that skips the underlying function if ConditionalModule is not"""
-    @Decorators.decorator
-    def if_module(target, *args, **kwargs):
-        if not ConditionalModule:
+    if not ConditionalModule:
+        @Decorators.decorator
+        def if_module(target, *args, **kwargs):
             raise Skipped("Test depends on presence of module %s" % module_name)
-        return target(*args, **kwargs)
-    return if_module
+        return if_module
+    else:
+        # don't alter the function if not necessary
+        def if_module(target):
+            return target
+        return if_module
+
+def if_platform(*valid_platforms):
+    """A decorator that skips the underlying function if not running on one of the given platforms"""
+    if sys.platform not in valid_platforms:
+        @Decorators.decorator
+        def if_platform(target, *args, **kwargs):
+            raise Skipped("Test is marked not to run on platform %s" % sys.platform)
+        return if_platform
+    else:
+        # don't alter the function if not necessary
+        def if_platform(target):
+            return target
+        return if_platform
 

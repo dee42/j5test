@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from j5.Test import Utils
+import sys
 
 # some helper code for the tests
 
@@ -148,8 +149,20 @@ def test_conditional_module_missing():
 
 @Utils.method_not_raises(Utils.Skipped)
 @Utils.if_module(Utils, "j5.Test.Utils")
-def test_conditional_module_missing():
-    """Tests that this test is not run..."""
+def test_conditional_module_present():
+    """Tests that this test is run..."""
     assert True
 
+
+@Utils.method_raises(Utils.Skipped)
+@Utils.if_platform("Badgers")
+def test_conditional_platform_missing():
+    """Tests that this test is not run..."""
+    raise AssertionError("This test should have been skipped with a message about the platform""")
+
+@Utils.method_not_raises(Utils.Skipped)
+@Utils.if_platform("a", "few", sys.platform)
+def test_conditional_platform_present():
+    """Tests that this test is not run..."""
+    assert True
 
