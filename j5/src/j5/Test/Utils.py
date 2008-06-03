@@ -50,6 +50,10 @@ class Skipped(Warning, NoseSkipped, PyTestSkipped):
         super(Skipped, self).__init__(msg)
         self.excinfo = None
 
+class NotImplementedTest(Skipped):
+    """A class to indicate that the reason the test was skipped is that it is not implemented"""
+    pass
+
 def skip(msg="unknown reason"):
     """Raises a generic Skipped exception that will cause this test to be skipped"""
     raise Skipped(msg)
