@@ -166,3 +166,12 @@ def test_conditional_platform_present():
     """Tests that this test is not run..."""
     assert True
 
+def test_expected_external_error_for():
+    """Checks that expected errors are skipped when the right options are passed"""
+    wrapper = Utils.expected_external_error_for(KeyError, "Key errors for 4", option=4)(sample_method)
+    assert Utils.method_raises(Utils.ExpectedExternalError)(wrapper)(4)
+    assert Utils.method_raises(Utils.ExpectedExternalError)(wrapper)(option=4)
+    assert Utils.method_raises(ValueError)(wrapper)(option=3)
+    assert wrapper(1) == "pigeons"
+    assert wrapper(option=1) == "pigeons"
+

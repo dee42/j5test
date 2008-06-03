@@ -18,7 +18,7 @@ def raises(ExpectedException, target, *args, **kwargs):
         result = target(*args, **kwargs)
     except ExpectedException, e:
         return True
-    except StandardError, e:
+    except Exception, e:
         raise AssertionError("Call to %s did not raise %s but raised %s: %s" % (target.__name__, ExpectedException.__name__, e.__class__.__name__, e))
     raise AssertionError("Call to %s did not raise %s but returned %r" % (target.__name__, ExpectedException.__name__, result))
 
@@ -79,4 +79,27 @@ def if_platform(*valid_platforms):
         def if_platform(target):
             return target
         return if_platform
+
+class ExpectedExternalError(Skipped):
+    """Raised for skipping errors that we know about, but belong to an external library"""
+    pass
+
+def expected_external_error_for(ExpectedException, msg, **match_kwargs):
+    """on calls matching the kwargs specification, expect the given exception and skip when it is raised"""
+    @Decorators.decorator
+    def expected_external_error_for(target, *args, **kwargs):
+        for kw, expected_value in match_kwargs.iteritems():
+            actual_value = Decorators.get_or_pop_arg(kw, args, kwargs, Decorators.inspect.getargspec(target))
+            if actual_value != expected_value:
+                return target(*args, **kwargs)
+        try:
+            result = target(*args, **kwargs)
+        except ExpectedException, e:
+            raise ExpectedExternalError(msg)
+        except Exception, e:
+            raise AssertionError("Call to %s with %s did not raise %s but raised %s: %s" % \
+                  (target.__name__, match_kwargs, ExpectedEception.__name__, e.__class__.__name__, e))
+        raise AssertionError("Call to %s with %s did not raise %s but returned %r" % \
+              (target.__name__, match_kwargs, ExpectedException.__name__, result))
+    return expected_external_error_for
 
