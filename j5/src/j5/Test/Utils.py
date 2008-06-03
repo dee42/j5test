@@ -108,9 +108,9 @@ def expect_external_error_for(ExpectedException, msg, check_args):
         except ExpectedException, e:
             raise ExpectedExternalError(msg)
         except Exception, e:
-            raise AssertionError("Call to %s with %s did not raise %s but raised %s: %s" % \
-                  (target.__name__, match_kwargs, ExpectedEception.__name__, e.__class__.__name__, e))
-        raise AssertionError("Call to %s with %s did not raise %s but returned %r" % \
-              (target.__name__, match_kwargs, ExpectedException.__name__, result))
+            raise AssertionError("Call to %s did not raise %s but raised %s: %s" % \
+                  (target.__name__, ExpectedException.__name__, e.__class__.__name__, e))
+        raise AssertionError("Call to %s did not raise %s but returned %r" % \
+              (target.__name__, ExpectedException.__name__, result))
     return expect_external_error_for
 

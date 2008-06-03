@@ -174,9 +174,17 @@ def test_expect_external_error_for():
             if actual_value != expected_value:
                 return target(*args, **kwargs)
     wrapper = Utils.expect_external_error_for(KeyError, "Key errors for 4", Utils.contains_expected_kwargs(option=4))(sample_method)
+    # check that when passing through the expected option the correct error is raised
     assert Utils.method_raises(Utils.ExpectedExternalError)(wrapper)(4)
     assert Utils.method_raises(Utils.ExpectedExternalError)(wrapper)(option=4)
+    # check that when passing in different options an exception comes through normally
     assert Utils.method_raises(ValueError)(wrapper)(option=3)
+    # check that when passing in different options a return value comes through normally
     assert wrapper(1) == "pigeons"
     assert wrapper(option=1) == "pigeons"
+    # check that an assertion is raised if the expected error is not raised
+    wrapper = Utils.expect_external_error_for(KeyError, "Key errors for 4", Utils.contains_expected_kwargs(option=3))(sample_method)
+    assert Utils.method_raises(AssertionError)(wrapper)(option=3)
+    wrapper = Utils.expect_external_error_for(KeyError, "Key errors for 4", Utils.contains_expected_kwargs(option=1))(sample_method)
+    assert Utils.method_raises(AssertionError)(wrapper)(option=1)
 
