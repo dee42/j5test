@@ -84,14 +84,25 @@ class ExpectedExternalError(Skipped):
     """Raised for skipping errors that we know about, but belong to an external library"""
     pass
 
-def expected_external_error_for(ExpectedException, msg, **match_kwargs):
-    """on calls matching the kwargs specification, expect the given exception and skip when it is raised"""
-    @Decorators.decorator
-    def expected_external_error_for(target, *args, **kwargs):
+def contains_expected_kwargs(**match_kwargs):
+    """A checker that checks if the given kwargs are present with the given values"""
+    def check_expected_kwargs(target, *args, **kwargs):
+        args_present = {}
         for kw, expected_value in match_kwargs.iteritems():
             actual_value = Decorators.get_or_pop_arg(kw, args, kwargs, Decorators.inspect.getargspec(target))
             if actual_value != expected_value:
-                return target(*args, **kwargs)
+                return False
+            args_present[kw] = True
+        return len(args_present) == len(match_kwargs)
+    return check_expected_kwargs
+
+def expect_external_error_for(ExpectedException, msg, check_args):
+    """on calls passing the check_args specification, expect the given exception and skip when it is raised
+    check_args(target, *args, **kwargs) should be a callable that returns whether to expect an Exception"""
+    @Decorators.decorator
+    def expect_external_error_for(target, *args, **kwargs):
+        if not check_args(target, *args, **kwargs):
+            return target(*args, **kwargs)
         try:
             result = target(*args, **kwargs)
         except ExpectedException, e:
@@ -101,5 +112,5 @@ def expected_external_error_for(ExpectedException, msg, **match_kwargs):
                   (target.__name__, match_kwargs, ExpectedEception.__name__, e.__class__.__name__, e))
         raise AssertionError("Call to %s with %s did not raise %s but returned %r" % \
               (target.__name__, match_kwargs, ExpectedException.__name__, result))
-    return expected_external_error_for
+    return expect_external_error_for
 

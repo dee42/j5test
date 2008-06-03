@@ -166,9 +166,14 @@ def test_conditional_platform_present():
     """Tests that this test is not run..."""
     assert True
 
-def test_expected_external_error_for():
+def test_expect_external_error_for():
     """Checks that expected errors are skipped when the right options are passed"""
-    wrapper = Utils.expected_external_error_for(KeyError, "Key errors for 4", option=4)(sample_method)
+    def is_key_error_raiser(*args, **kwargs):
+        for kw, expected_value in match_kwargs.iteritems():
+            actual_value = Decorators.get_or_pop_arg(kw, args, kwargs, Decorators.inspect.getargspec(target))
+            if actual_value != expected_value:
+                return target(*args, **kwargs)
+    wrapper = Utils.expect_external_error_for(KeyError, "Key errors for 4", Utils.contains_expected_kwargs(option=4))(sample_method)
     assert Utils.method_raises(Utils.ExpectedExternalError)(wrapper)(4)
     assert Utils.method_raises(Utils.ExpectedExternalError)(wrapper)(option=4)
     assert Utils.method_raises(ValueError)(wrapper)(option=3)
