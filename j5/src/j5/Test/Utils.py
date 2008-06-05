@@ -9,7 +9,7 @@ except ImportError:
 try:
     from nose.plugins.skip import SkipTest as NoseSkipped
 except ImportError:
-    PyTextSkipped = object
+    NoseSkipped = object
 import sys
 
 def raises(ExpectedException, target, *args, **kwargs):
