@@ -6,6 +6,7 @@ __all__ = ['IterativeTester','Dimension']
 import copy
 import sys
 from j5.Basic import DictUtils
+from j5.Test import Utils
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
@@ -60,6 +61,7 @@ class IterativeTester(object):
 
             for dim in cls.DIMENSIONS[prefix]:
                 cls.makeFailedConditionTestsForDim(prefix, dim)
+                cls.makeSkippedConditionTestsForDim(prefix, dim)
 
     @classmethod
     def makeIterativeTestsForMethod(cls,prefix,methname,meth):
@@ -115,6 +117,26 @@ class IterativeTester(object):
         failmeth.func_name = newname
 
         setattr(cls, newname, failmeth)
+
+    @classmethod
+    def makeSkippedConditionTestsForDim(cls, prefix, dim):
+        skipped_conditions = dim.getSkippedConditions()
+        for name, message in skipped_conditions.iteritems():
+            cls.createSkipMessageTest(prefix, name, message)
+
+    @classmethod
+    def createSkipMessageTest(cls, prefix, conditionname, message):
+        """
+        Add a skipping test method which prints a message
+        """
+        newname = "test_"+prefix+"_"+conditionname
+
+        def skipmeth(self):
+            Utils.skip(message)
+
+        skipmeth.func_name = newname
+
+        setattr(cls, newname, skipmeth)
 
     @classmethod
     def permuteVars(cls,prefix):
@@ -244,6 +266,12 @@ class Dimension(object):
            Must be callable as soon as the object has been created
         """
         return getattr(self, "_failed_conditions", {})
+
+    def getSkippedConditions(self):
+        """Return a dictionary mapping failed condition names to error messages
+           Must be callable as soon as the object has been created
+        """
+        return getattr(self, "_skipped_conditions", {})
 
     def setup(self):
         """Setup the held resources.

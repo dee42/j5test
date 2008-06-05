@@ -23,7 +23,7 @@ def raises(ExpectedException, target, *args, **kwargs):
     raise AssertionError("Call to %s did not raise %s but returned %r" % (target.__name__, ExpectedException.__name__, result))
 
 def not_raises(UnexpectedException, target, *args, **kwargs):
-    """raise AssertionError, if target code does not raise the unexpected exception"""
+    """raise AssertionError, if target code raises the given unexpected exception"""
     try:
         result = target(*args, **kwargs)
     except UnexpectedException, e:

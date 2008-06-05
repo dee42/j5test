@@ -17,15 +17,15 @@ class BrowserDim(IterativeTester.Dimension):
         browsernames = []
         self._resources = {}
         self._browsernames = {}
-        self._failed_conditions = {}
+        self._skipped_conditions = {}
+        havebrowsers = False
         for browser in all_browsers:
             if selenium_can_find(browser):
                 havebrowsers = True
                 self._browsernames[browser] = browser
                 self._resources[browser] = None
-        havebrowsers = False
         if not havebrowsers:
-            self._failed_conditions["NoBrowsers"] = "No working browsers to run tests with"
+            self._skipped_conditions["NoBrowsers"] = "No working browsers to run tests with"
 
     def setup_class(cls):
         # TODO: start selenium server automatically
