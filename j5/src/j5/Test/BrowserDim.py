@@ -82,7 +82,11 @@ class BrowserDim(IterativeTester.Dimension):
         """stops any running browsers"""
         for browsername, web_config_name in self._selenium_runners.keys():
             selenium = self._selenium_runners.pop((browsername, web_config_name))
-            selenium.stop()
+            try:
+                selenium.stop()
+            except Exception, e:
+                logging.error("Error shutting down selenium controller for browser %s, web config %s: %s" % (browsername, web_config_name, e))
+
 
 
 
