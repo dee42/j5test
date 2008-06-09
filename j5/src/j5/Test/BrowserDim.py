@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 from j5.Test import IterativeTester
+from j5.Test import Utils
+from j5.Basic import Decorators
 import sys
 import selenium
 import logging
+import socket
 # FIXME: remove this once we don't do naughty things
 import inspect
 
@@ -11,6 +14,18 @@ import inspect
 all_browsers = ["firefox", "iexplore", "safari", "iehta", "chrome", "opera", "piiexplore", "pifirefox", "konqueror", "mock"]
 def selenium_can_find(browser_name):
     return browser_name == "firefox"
+
+class SeleniumNotRunning(Utils.Skipped):
+    pass
+
+def browser_is_notrunning(target, *args, **kwargs):
+    """A checker that checks if the browser argument is a SeleniumNotRunning exception"""
+    browser = Decorators.get_or_pop_arg("browser", args, kwargs, Decorators.inspect.getargspec(target))
+    if isinstance(browser, SeleniumNotRunning):
+        return True
+    return False
+
+if_selenium = Utils.skip_test_for("Selenium Server not found; cannot run web browser tests", browser_is_notrunning)
 
 class BrowserDim(IterativeTester.Dimension):
     seleniumHost = "localhost"
@@ -56,7 +71,11 @@ class BrowserDim(IterativeTester.Dimension):
     def start_browser(self, browsername, web_config_name):
         """starts up a browser for the given web config"""
         selenium_runner = selenium.selenium(self.seleniumHost, self.seleniumPort, "*%s" % browsername, self.browser_urls[web_config_name])
-        selenium_runner.start()
+        try:
+            selenium_runner.start()
+        except socket.error, e:
+            logging.error("Could not connect to selenium; assuming selenium server is not running: %s" % e)
+            selenium_runner = SeleniumNotRunning(str(e))
         self._selenium_runners[browsername, web_config_name] = selenium_runner
         return selenium_runner
 
@@ -82,6 +101,8 @@ class BrowserDim(IterativeTester.Dimension):
         """stops any running browsers"""
         for browsername, web_config_name in self._selenium_runners.keys():
             selenium = self._selenium_runners.pop((browsername, web_config_name))
+            if isinstance(selenium, Utils.Skipped):
+                pass
             try:
                 selenium.stop()
             except Exception, e:
