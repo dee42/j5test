@@ -118,3 +118,13 @@ def expect_external_error_for(ExpectedException, msg, check_args):
               (target.__name__, ExpectedException.__name__, result))
     return expect_external_error_for
 
+def skip_test_for(msg, check_args):
+    """on calls passing the check_args specification, skip the test with the given message
+    check_args(target, *args, **kwargs) should be a callable that returns whether to skip the test"""
+    @Decorators.decorator
+    def skip_test_for(target, *args, **kwargs):
+        if not check_args(target, *args, **kwargs):
+            return target(*args, **kwargs)
+        skip(msg)
+    return skip_test_for
+
