@@ -4,11 +4,15 @@ from j5.Test import IterativeTester
 from j5.Test import Utils
 from j5.Basic import Decorators
 import sys
-import selenium
 import logging
 import socket
 # FIXME: remove this once we don't do naughty things
 import inspect
+try:
+    import selenium
+except ImportError, e:
+    logging.warn("Could not import selenium; browser testing limited: %s" % e)
+    selenium = None
 
 # this stuff should be added to the selenium package as a patch, to support discovery of browsers
 all_browsers = ["firefox", "iexplore", "safari", "iehta", "chrome", "opera", "piiexplore", "pifirefox", "konqueror", "mock"]
@@ -18,6 +22,9 @@ def selenium_can_find(browser_name):
 class SeleniumNotRunning(Utils.Skipped):
     pass
 
+class SeleniumNotInstalled(Utils.Skipped):
+    pass
+
 def browser_is_notrunning(target, *args, **kwargs):
     """A checker that checks if the browser argument is a SeleniumNotRunning exception"""
     browser = Decorators.get_or_pop_arg("browser", args, kwargs, Decorators.inspect.getargspec(target))
@@ -25,7 +32,10 @@ def browser_is_notrunning(target, *args, **kwargs):
         return True
     return False
 
-if_selenium = Utils.skip_test_for("Selenium Server not found; cannot run web browser tests", browser_is_notrunning)
+if_selenium_browser = Utils.skip_test_for("Selenium Server not found; cannot run web browser tests", browser_is_notrunning)
+if_selenium_module = Utils.if_module(selenium, "selenium")
+
+if_selenium = Decorators.chain_decorators(if_selenium_browser, if_selenium_module)
 
 class BrowserDim(IterativeTester.Dimension):
     seleniumHost = "localhost"
@@ -70,12 +80,15 @@ class BrowserDim(IterativeTester.Dimension):
 
     def start_browser(self, browsername, web_config_name):
         """starts up a browser for the given web config"""
-        selenium_runner = selenium.selenium(self.seleniumHost, self.seleniumPort, "*%s" % browsername, self.browser_urls[web_config_name])
-        try:
-            selenium_runner.start()
-        except socket.error, e:
-            logging.error("Could not connect to selenium; assuming selenium server is not running: %s" % e)
-            selenium_runner = SeleniumNotRunning(str(e))
+        if selenium:
+            selenium_runner = selenium.selenium(self.seleniumHost, self.seleniumPort, "*%s" % browsername, self.browser_urls[web_config_name])
+            try:
+                selenium_runner.start()
+            except socket.error, e:
+                logging.error("Could not connect to selenium; assuming selenium server is not running: %s" % e)
+                selenium_runner = SeleniumNotRunning(str(e))
+        else:
+            selenium_runner = SeleniumNotInstalled("Could not import the selenium module")
         self._selenium_runners[browsername, web_config_name] = selenium_runner
         return selenium_runner
 
