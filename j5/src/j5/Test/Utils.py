@@ -11,6 +11,7 @@ try:
 except ImportError:
     NoseSkipped = object
 import sys
+import os
 
 def raises(ExpectedException, target, *args, **kwargs):
     """raise AssertionError, if target code does not raise the expected exception"""
@@ -83,6 +84,35 @@ def if_platform(*valid_platforms):
         def if_platform(target):
             return target
         return if_platform
+
+def if_executable(*required_executables):
+    """A decorator that skips the underlying function if the given executable files are not all accessible (ANDs the results)"""
+    # NOTE: This doesn't test the permissions of the executables, just if the files are present
+    found_all = True
+    missing_executable = None
+    for executable in required_executables:
+        found = False
+        if os.path.isabs(executable):
+            found = os.path.exists(executable)
+        else:
+            for search_path in os.defpath.split(os.pathsep):
+                if os.path.exists(os.path.join(search_path, executable)):
+                    found = True
+                    break
+        if not found:
+            missing_executable = executable
+            found_all = False
+            break
+    if not found:
+        @Decorators.decorator
+        def if_executable(target, *args, **kwargs):
+            raise Skipped("Test is marked not to run if executable %s is not present" % (missing_executable,))
+        return if_executable
+    else:
+        # don't alter the function if not necessary
+        def if_executable(target):
+            return target
+        return if_executable
 
 class ExpectedExternalError(Skipped):
     """Raised for skipping errors that we know about, but belong to an external library"""

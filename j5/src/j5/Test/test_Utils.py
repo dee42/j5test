@@ -163,7 +163,19 @@ def test_conditional_platform_missing():
 @Utils.method_not_raises(Utils.Skipped)
 @Utils.if_platform("a", "few", sys.platform)
 def test_conditional_platform_present():
-    """Tests that this test is not run..."""
+    """Tests that this test is not skipped..."""
+    assert True
+
+@Utils.method_raises(Utils.Skipped)
+@Utils.if_executable("ronald-the-uncommon-executable")
+def test_conditional_executable_missing():
+    """Tests that this test is not skipped"""
+    raise AssertionError("This test should have been skipped with a message about the missing executable""")
+
+@Utils.method_not_raises(Utils.Skipped)
+@Utils.if_executable(sys.executable)
+def test_conditional_executable_present():
+    """Tests that this test is not skipped"""
     assert True
 
 def test_expect_external_error_for():
