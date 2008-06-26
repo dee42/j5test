@@ -16,6 +16,9 @@ except ImportError, e:
 
 # this stuff should be added to the selenium package as a patch, to support discovery of browsers
 all_browsers = ["firefox", "iexplore", "safari", "iehta", "chrome", "opera", "piiexplore", "pifirefox", "konqueror", "mock"]
+# TODO: Add actual locating support here, with paths for alternate setups
+# e.g. for firefox, selenium assumes the executable is "firefox-bin" on Linux, but
+# with the advent of Firefox 3, it's actually "firefox"
 def selenium_can_find(browser_name):
     return browser_name == "firefox"
 
