@@ -141,6 +141,43 @@ def test_catchskip():
     Utils.skip("This method should be skipped, as it is testing skipping methods")
     raise AssertionError("This test should have been skipped")
 
+def find_extraterrestrial_beavers():
+    """returns whether we can find any extraterrestrial beavers"""
+    return False
+
+def find_terrestrial_beavers():
+    """returns whether we can find any terrestrial beavers"""
+    return True
+
+def find_terrestrial_beavers():
+    """returns whether we can find any terrestrial beavers"""
+    return True
+
+class ContradictionInTerms(Exception):
+    pass
+
+def find_terrestrial_aliens():
+    """returns whether we can find any terrestrial aliens"""
+    raise ContradictionInTerms("Terrestrial aliens is an oxymoron")
+
+@Utils.method_raises(Utils.Skipped)
+@Utils.if_check(find_extraterrestrial_beavers, "check for extraterrestrial beavers")
+def test_conditional_check_fails():
+    """Tests that this test is not run"""
+    raise AssertionError("This test should have been skipped with a message about the missing extraterrestrial beavers""")
+
+@Utils.method_not_raises(Utils.Skipped)
+@Utils.if_check(find_terrestrial_beavers, "check for terrestrial beavers")
+def test_conditional_check_passes():
+    """Tests that this test is run"""
+    assert True
+
+@Utils.method_raises(ContradictionInTerms)
+@Utils.if_check(find_terrestrial_aliens, "check for terrestrial aliens")
+def test_conditional_check_error_propagates():
+    """Tests that this test is run"""
+    raise AssertionError("This test should have raise a ContradictionInTerms in the check for terrestrial aliens")
+
 @Utils.method_raises(Utils.Skipped)
 @Utils.if_module(None, "Badgers")
 def test_conditional_module_missing():

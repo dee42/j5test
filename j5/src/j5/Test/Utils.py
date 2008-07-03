@@ -12,6 +12,7 @@ except ImportError:
     NoseSkipped = object
 import sys
 import os
+import logging
 
 def raises(ExpectedException, target, *args, **kwargs):
     """raise AssertionError, if target code does not raise the expected exception"""
@@ -58,6 +59,32 @@ class NotImplementedTest(Skipped):
 def skip(msg="unknown reason"):
     """Raises a generic Skipped exception that will cause this test to be skipped"""
     raise Skipped(msg)
+
+def if_check(check, check_description=None):
+    """A decorator that skips the underlying function if check() doesn't return True"""
+    if check_description is None:
+        check_description = check.__doc__
+    try:
+        check_result = check()
+        check_error = False
+    except Exception, e:
+        check_error = True
+    if check_error:
+        @Decorators.decorator
+        def if_check(target, *args, **kwargs):
+            logging.error("Test depends on %s which failed with %s" % (check_description, e))
+            raise e
+        return if_check
+    elif not check_result:
+        @Decorators.decorator
+        def if_check(target, *args, **kwargs):
+            raise Skipped("Test depends on %s" % check_description)
+        return if_check
+    else:
+        # don't alter the function if not necessary
+        def if_check(target):
+            return target
+        return if_check
 
 def if_module(ConditionalModule, module_name=''):
     """A decorator that skips the underlying function if ConditionalModule is not"""
