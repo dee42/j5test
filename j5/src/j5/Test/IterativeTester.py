@@ -19,7 +19,7 @@ def combinations(*args):
                 yield [x] + rest
 
 class IterativeTesterMetaClass(type):
-   def __init__(cls, name, bases, dct):
+    def __init__(cls, name, bases, dct):
         """We need to create the new test methods at class creation time so that
            py.test knows can find them as soon as the module is loaded."""
         super(IterativeTesterMetaClass, cls).__init__(name, bases, dct)
