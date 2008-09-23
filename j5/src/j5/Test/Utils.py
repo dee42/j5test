@@ -5,11 +5,13 @@ from j5.Basic import Decorators
 try:
     from py.__.test.outcome import Skipped as PyTestSkipped
 except ImportError:
-    PyTestSkipped = object
+    class PyTestSkipped(object):
+        pass
 try:
     from nose.plugins.skip import SkipTest as NoseSkipped
 except ImportError:
-    NoseSkipped = object
+    class NoseSkipped(object):
+        pass
 import sys
 import os
 import logging
@@ -184,4 +186,3 @@ def skip_test_for(msg, check_args):
             return target(*args, **kwargs)
         skip(msg)
     return skip_test_for
-
