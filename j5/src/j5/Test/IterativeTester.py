@@ -90,7 +90,8 @@ class IterativeTester(object):
             return oldmeth(self,*args)
 
         newmeth.func_name = newname
-        newmeth.func_doc = oldmeth.func_doc
+        if oldmeth.func_doc:
+            newmeth.func_doc = oldmeth.func_doc + " (%s)" % (", ".join(varnames),)
         newmeth.func_dict = oldmeth.func_dict.copy()
         newmeth.iterativetestprefix = prefix
         newmeth.iterativetestvarnames = varnames
