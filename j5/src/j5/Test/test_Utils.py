@@ -243,3 +243,35 @@ def test_skip_test_for():
     assert Utils.method_raises(Utils.Skipped)(find_badger)("scott")
     assert find_badger("william") == "holland"
 
+def check_that_passes():
+    """A check that we know always passes"""
+    assert True
+
+def check_that_fails_assert():
+    """A check that we know always fails with an AssertionError"""
+    assert False
+
+def check_that_raises_error():
+    """A check that we know always fails with a ValueError"""
+    raise ValueError("This is wrong")
+
+@Utils.method_not_raises(Utils.Skipped)
+@Utils.if_passes(check_that_passes)
+def test_if_passes_with_pass():
+    assert True
+
+@Utils.method_raises(Utils.Skipped)
+@Utils.if_passes(check_that_fails_assert)
+def test_if_passes_with_assert():
+    raise AssertionError("This should be skipped")
+
+@Utils.method_raises(Utils.Skipped)
+@Utils.if_passes(check_that_raises_error)
+def test_if_passes_with_error():
+    raise AssertionError("This should be skipped")
+
+@Utils.method_raises(Utils.Skipped)
+@Utils.if_passes(check_that_passes, check_that_fails_assert)
+def test_if_passes_with_multiple():
+    raise AssertionError("This should be skipped")
+

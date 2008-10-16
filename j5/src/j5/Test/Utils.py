@@ -114,6 +114,28 @@ def if_platform(*valid_platforms):
             return target
         return if_platform
 
+def if_passes(*tests):
+    """A decorator that skips the underlying function if any of the given tests fail (raise an error)"""
+    failed = False
+    failed_messages = []
+    for test in tests:
+        try:
+            test()
+        except Exception, e:
+            failed = True
+            failed_messages.append("Test %s failed with %s" % (test.__name__, e))
+    if failed:
+        failed_message = ", ".join(failed_messages)
+        @Decorators.decorator
+        def if_passes(target, *args, **kwargs):
+            raise Skipped("Test is marked not to run because of other test failures: %s" % (failed_message,))
+        return if_passes
+    else:
+        # don't alter the function if not necessary
+        def if_passes(target):
+            return target
+        return if_passes
+
 def if_executable(*required_executables):
     """A decorator that skips the underlying function if the given executable files are not all accessible (ANDs the results)"""
     # NOTE: This doesn't test the permissions of the executables, just if the files are present
