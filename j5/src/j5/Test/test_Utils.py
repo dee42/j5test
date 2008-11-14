@@ -50,7 +50,7 @@ def test_simple_raises_returns():
         returned = Utils.raises(ValueError, sample_method, 1)
     except AssertionError, e:
         raised = e
-    except StandardError, e:
+    except Exception, e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -68,7 +68,7 @@ def test_simple_raises_incorrect():
         returned = Utils.raises(ValueError, sample_method, 4)
     except AssertionError, e:
         raised = e
-    except StandardError, e:
+    except Exception, e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -92,7 +92,7 @@ def test_method_raises_returns():
         returned = sample_decorated_function(1)
     except AssertionError, e:
         raised = e
-    except StandardError, e:
+    except Exception, e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -106,7 +106,7 @@ def test_method_raises_incorrect():
         returned = sample_decorated_function(4)
     except AssertionError, e:
         raised = e
-    except StandardError, e:
+    except Exception, e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -121,7 +121,7 @@ def test_method_not_raises_incorrect():
         returned = sample_decorated_function_2(4)
     except AssertionError, e:
         raised = e
-    except StandardError, e:
+    except Exception, e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
