@@ -22,6 +22,15 @@ def get_default_config(**kwargs):
         kwargs["plugins"] = plugins.DefaultPluginManager()
     return config.Config(**kwargs)
 
+def get_named_module_test_loader(path_name):
+    """Takes a base module name, and returns a loader already loaded with tests, ready for a TestRunner
+    e.g. "ld = get_package_test_loader('x.y.z')" will get all tests under x.y.z"""
+    workingDir = os.path.dirname(os.path.abspath(path_name))
+    basename = os.path.basename(path_name)
+    cfg = get_default_config(workingDir=workingDir)
+    cfg.testNames = [basename]
+    return loader.TestLoader(config=cfg)
+
 def get_module_test_loader(base_module):
     """Takes a base module, and returns a loader already loaded with tests, ready for a TestRunner
     e.g. "import j5.Test.test_NoseTests ; ld = get_package_test_loader(j5)" will get all tests under j5.Test.test_NoseTests"""
