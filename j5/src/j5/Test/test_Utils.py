@@ -149,10 +149,6 @@ def find_terrestrial_beavers():
     """returns whether we can find any terrestrial beavers"""
     return True
 
-def find_terrestrial_beavers():
-    """returns whether we can find any terrestrial beavers"""
-    return True
-
 class ContradictionInTerms(Exception):
     pass
 
