@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from j5.Test import Utils
+import os
 import sys
 
 # some helper code for the tests
@@ -37,6 +38,21 @@ def sample_decorated_function_2(option):
         raise KeyError("Wrong key")
 
 # here are the actual tests
+
+def test_secure_tmp_file():
+    file, file_name = Utils.secure_tmp_file()
+    try:
+        assert os.path.exists(file_name)
+        file.write("Contents")
+        file.close()
+        assert os.path.exists(file_name)
+        reader = open(file_name, "r")
+        assert reader.read() == "Contents"
+        reader.close()
+    finally:
+        os.remove(file_name)
+        assert not os.path.exists(file_name)
+
 def test_simple_raises_correct():
     """check raising the correct error, and a subclass of the correct error"""
     assert Utils.raises(ValueError, sample_method, 2)

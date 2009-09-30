@@ -15,8 +15,18 @@ except ImportError:
     class NoseSkipped(Exception):
         pass
 import sys
+import tempfile
 import os
 import logging
+
+def secure_tmp_file(suffix='', prefix='tmp', dir=None, text=False, mode="w"):
+    """returns a temporary (file, file_name) pair created using mkstemp - cleaning up is the caller's responsibility (adds b to mode if not text)"""
+    file_fd, file_name = tempfile.mkstemp(suffix, prefix, dir, text)
+    if text:
+        file = os.fdopen(file_fd, mode)
+    else:
+        file = os.fdopen(file_fd, mode + "b")
+    return file, file_name
 
 def raises(ExpectedException, target, *args, **kwargs):
     """raise AssertionError, if target code does not raise the expected exception"""
