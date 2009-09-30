@@ -271,3 +271,8 @@ def test_if_passes_with_error():
 def test_if_passes_with_multiple():
     raise AssertionError("This should be skipped")
 
+def test_skipped_printable():
+    """Tests that skipped objects are printable"""
+    error = Utils.Skipped("The Message")
+    assert "The Message" in str(error)
+

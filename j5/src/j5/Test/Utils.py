@@ -5,12 +5,14 @@ from j5.Basic import Decorators
 try:
     from py.__.test.outcome import Skipped as PyTestSkipped
 except ImportError:
-    class PyTestSkipped(object):
-        pass
+    class PyTestSkipped(Exception):
+        def __init__(self, msg=None, excinfo=None):
+            self.msg = msg
+            self.excinfo = excinfo
 try:
     from nose.plugins.skip import SkipTest as NoseSkipped
 except ImportError:
-    class NoseSkipped(object):
+    class NoseSkipped(Exception):
         pass
 import sys
 import os
@@ -52,7 +54,7 @@ class Skipped(Warning, NoseSkipped, PyTestSkipped):
     """A unified class for skipping tests in any framework"""
     def __init__(self, msg):
         super(Skipped, self).__init__(msg)
-        self.excinfo = None
+        PyTestSkipped.__init__(self, msg, None)
 
 class NotImplementedTest(Skipped):
     """A class to indicate that the reason the test was skipped is that it is not implemented"""
