@@ -118,14 +118,14 @@ def if_long_test_run():
     """A decorator that skips the underlyibng function if we're not performing a long test run"""
     if "J5_LONG_TEST_RUN" not in os.environ:
         @Decorators.decorator
-        def if_long_test_run(target, *args, **kwargs):
+        def if_long_test(target, *args, **kwargs):
             raise Skipped("Test is marked not to run without J5_LONG_TEST_RUN set")
-        return if_platform
+        return if_long_test
     else:
         # don't alter the function if not necessary
-        def if_long_test_run(target):
+        def if_long_test(target):
             return target
-        return if_long_test_run
+        return if_long_test
 
 def if_passes(*tests):
     """A decorator that skips the underlying function if any of the given tests fail (raise an error)"""
