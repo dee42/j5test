@@ -19,6 +19,34 @@ import tempfile
 import os
 import logging
 
+def detect_frame_framework(frame):
+    """tries to detect whether the given frame is part of a running test framework"""
+    package = frame.f_globals.get("__package__", None) or ""
+    if package == "py._test":
+        return "py.test"
+    elif package == "nose":
+        return "nose"
+    return None
+
+def detect_framework(starting_frame=None):
+    """tries to detect what test framework we are running in"""
+    frame = starting_frame or sys._getframe()
+    for n in range(20):
+        frame = frame.f_back
+        framework = detect_frame_framework(frame)
+        if framework:
+            print "detected test framework %s at frame %d" % (framework, n)
+            return framework
+    return None
+
+def in_nose_framework():
+    """tries to estimate whether we are running using the nose framework. expensive and should only be used for self-referential tests"""
+    return detect_framework(sys._getframe()) == "nose"
+
+def in_pytest_framework():
+    """tries to estimate whether we are running using the py.test framework. expensive and should only be used for self-referential tests"""
+    return detect_framework(sys._getframe()) == "py.test"
+
 def secure_tmp_file(suffix='', prefix='tmp', dir=None, text=False, mode="w"):
     """returns a temporary (file, file_name) pair created using mkstemp - cleaning up is the caller's responsibility (adds b to mode if not text)"""
     file_fd, file_name = tempfile.mkstemp(suffix, prefix, dir, text)
