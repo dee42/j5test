@@ -51,11 +51,12 @@ class BrowserDim(IterativeTester.Dimension):
         self._skipped_conditions = {}
         self._selenium_runners = {}
         havebrowsers = False
-        for browser in all_browsers:
-            if selenium_can_find(browser):
-                havebrowsers = True
-                self._browsernames[browser] = browser
-                self._resources[browser] = None
+        if selenium:
+            for browser in all_browsers:
+                if selenium_can_find(browser):
+                    havebrowsers = True
+                    self._browsernames[browser] = browser
+                    self._resources[browser] = None
         if not havebrowsers:
             self._skipped_conditions["NoBrowsers"] = "No working browsers to run tests with"
 
