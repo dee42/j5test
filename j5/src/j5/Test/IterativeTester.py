@@ -7,6 +7,8 @@ import copy
 import sys
 from j5.Basic import DictUtils
 from j5.Test import Utils
+from j5.OS import ThreadControl
+import threading
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
@@ -200,6 +202,8 @@ class IterativeTester(object):
             # call dim teardown methods
             for dim in dims:
                 dim.teardown()
+        # Brute-force any extra threads to make sure plugins have shut down correctly
+        ThreadControl.stop_threads(exclude_threads=[threading.currentThread()])
 
     def setup_method(self, method):
         if hasattr(method, "iterativetestprefix"):
