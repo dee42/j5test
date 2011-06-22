@@ -11,7 +11,7 @@
        iterated over and the Dimensions which supply their arguments.
 """
 
-from IterativeTester import IterativeTester, Dimension
+from j5.Test.IterativeTester import IterativeTester, Dimension
 from j5.Test.Utils import raises
 
 #
