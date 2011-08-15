@@ -170,7 +170,7 @@ class IterativeTester(object):
                     args = cls.getMethodArgs(prefix,varnames)
                     try:
                         setupmeth(*args)
-                    except Exception, e:
+                    except Exception as e:
                         cls.iterdata['_iterativetest_setup_class_failed'] = (e,sys.exc_info()[2])
 
                     del cls.iterdata
@@ -190,7 +190,7 @@ class IterativeTester(object):
                     args = cls.getMethodArgs(prefix,varnames)
                     try:
                         teardownmeth(*args)
-                    except Exception, e:
+                    except Exception as e:
                         cls.iterdata['_iterativetest_teardown_class_failed'] = (e,sys.exc_info()[2])
 
                     del cls.iterdata

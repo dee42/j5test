@@ -64,9 +64,9 @@ def test_simple_raises_returns():
     returned = None
     try:
         returned = Utils.raises(ValueError, sample_method, 1)
-    except AssertionError, e:
+    except AssertionError as e:
         raised = e
-    except Exception, e:
+    except Exception as e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -82,9 +82,9 @@ def test_simple_raises_incorrect():
     returned = None
     try:
         returned = Utils.raises(ValueError, sample_method, 4)
-    except AssertionError, e:
+    except AssertionError as e:
         raised = e
-    except Exception, e:
+    except Exception as e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -106,9 +106,9 @@ def test_method_raises_returns():
     returned = None
     try:
         returned = sample_decorated_function(1)
-    except AssertionError, e:
+    except AssertionError as e:
         raised = e
-    except Exception, e:
+    except Exception as e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -120,9 +120,9 @@ def test_method_raises_incorrect():
     returned = None
     try:
         returned = sample_decorated_function(4)
-    except AssertionError, e:
+    except AssertionError as e:
         raised = e
-    except Exception, e:
+    except Exception as e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
@@ -135,9 +135,9 @@ def test_method_not_raises_incorrect():
     returned = None
     try:
         returned = sample_decorated_function_2(4)
-    except AssertionError, e:
+    except AssertionError as e:
         raised = e
-    except Exception, e:
+    except Exception as e:
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)

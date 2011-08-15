@@ -60,9 +60,9 @@ def raises(ExpectedException, target, *args, **kwargs):
     """raise AssertionError, if target code does not raise the expected exception"""
     try:
         result = target(*args, **kwargs)
-    except ExpectedException, e:
+    except ExpectedException as e:
         return True
-    except Exception, e:
+    except Exception as e:
         raise AssertionError("Call to %s did not raise %s but raised %s: %s" % (target.__name__, ExpectedException.__name__, e.__class__.__name__, e))
     raise AssertionError("Call to %s did not raise %s but returned %r" % (target.__name__, ExpectedException.__name__, result))
 
@@ -70,7 +70,7 @@ def not_raises(UnexpectedException, target, *args, **kwargs):
     """raise AssertionError, if target code raises the given unexpected exception"""
     try:
         result = target(*args, **kwargs)
-    except UnexpectedException, e:
+    except UnexpectedException as e:
         raise AssertionError("Call to %s raised %s: %s" % (target.__name__, e.__class__.__name__, e))
     return result
 
@@ -109,7 +109,7 @@ def if_check(check, check_description=None):
     try:
         check_result = check()
         check_error = False
-    except Exception, e:
+    except Exception as e:
         check_error = True
     if check_error:
         @Decorators.decorator
@@ -174,7 +174,7 @@ def if_passes(*tests):
     for test in tests:
         try:
             test()
-        except Exception, e:
+        except Exception as e:
             failed = True
             failed_messages.append("Test %s failed with %s" % (test.__name__, e))
     if failed:
@@ -243,9 +243,9 @@ def expect_external_error_for(ExpectedException, msg, check_args):
             return target(*args, **kwargs)
         try:
             result = target(*args, **kwargs)
-        except ExpectedException, e:
+        except ExpectedException as e:
             raise ExpectedExternalError(msg)
-        except Exception, e:
+        except Exception as e:
             raise AssertionError("Call to %s did not raise %s but raised %s: %s" % \
                   (target.__name__, ExpectedException.__name__, e.__class__.__name__, e))
         raise AssertionError("Call to %s did not raise %s but returned %r" % \

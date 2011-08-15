@@ -10,7 +10,7 @@ import socket
 import inspect
 try:
     import selenium
-except ImportError, e:
+except ImportError as e:
     logging.warn("Could not import selenium; browser testing limited: %s" % e)
     selenium = None
 
@@ -88,7 +88,7 @@ class BrowserDim(IterativeTester.Dimension):
             selenium_runner = selenium.selenium(self.seleniumHost, self.seleniumPort, "*%s" % browsername, self.browser_urls[web_config_name])
             try:
                 selenium_runner.start()
-            except socket.error, e:
+            except socket.error as e:
                 logging.error("Could not connect to selenium; assuming selenium server is not running: %s" % e)
                 selenium_runner = SeleniumNotRunning(str(e))
         else:
@@ -122,7 +122,7 @@ class BrowserDim(IterativeTester.Dimension):
                 pass
             try:
                 selenium.stop()
-            except Exception, e:
+            except Exception as e:
                 logging.error("Error shutting down selenium controller for browser %s, web config %s: %s" % (browsername, web_config_name, e))
 
 
