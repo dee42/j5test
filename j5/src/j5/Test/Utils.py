@@ -62,6 +62,8 @@ def raises(ExpectedException, target, *args, **kwargs):
         result = target(*args, **kwargs)
     except ExpectedException as e:
         return True
+    except Skipped as s:
+        raise s
     except Exception as e:
         raise AssertionError("Call to %s did not raise %s but raised %s: %s" % (target.__name__, ExpectedException.__name__, e.__class__.__name__, e))
     raise AssertionError("Call to %s did not raise %s but returned %r" % (target.__name__, ExpectedException.__name__, result))
