@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 from j5.Basic import WithContextSkip
-import threading
+import inspect
 import logging
+import threading
+import sys
 
 block_event_lock = threading.Lock()
 block_events = {}
@@ -16,9 +18,15 @@ def only_thread(thread_name):
         raise WithContextSkip.SkipStatement()
 
 @WithContextSkip.conditionalcontextmanager
-def only_thread_blocking(thread_name, block_name):
+def only_thread_blocking(thread_name, block_name=None):
     """Runs the controlled block only if the current thread has the given name - otherwise skips it. Wait for the given thread to run the block before allowing other threads to proceed"""
     with block_event_lock:
+        if block_name is None:
+            frame = sys._getframe().f_back.f_back
+            filename = frame.f_code.co_filename
+            if filename.startswith("<"):
+                filename = filename + "/0x%x" % id(frame.f_code)
+            block_name = "%s:%d" % (filename, frame.f_lineno)
         block_event = block_events.setdefault(block_name, threading.Event())
     current_thread_name = threading.current_thread().name
     if thread_name == current_thread_name:

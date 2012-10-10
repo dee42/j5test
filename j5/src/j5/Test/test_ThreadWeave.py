@@ -104,11 +104,11 @@ class TestBlockingWeave(object):
         """A method that can be entered by multiple threads, and decides what to do as it processes the queue depending on which thread is active, blocking the others along the way"""
         with ThreadWeave.only_thread_blocking('eat_fries', 'first_fries') as StatementSkipped.detector:
             self.eat_fries(name)
-        with ThreadWeave.only_thread_blocking('eat_burgers', 'first_burger') as StatementSkipped.detector:
+        with ThreadWeave.only_thread_blocking('eat_burgers') as StatementSkipped.detector:
             self.eat_burgers(name)
-        with ThreadWeave.only_thread_blocking('eat_fries', 'second_fries') as StatementSkipped.detector:
+        with ThreadWeave.only_thread_blocking('eat_fries') as StatementSkipped.detector:
             self.eat_fries(name)
-        with ThreadWeave.only_thread_blocking('eat_burgers', 'second_burger') as StatementSkipped.detector:
+        with ThreadWeave.only_thread_blocking('eat_burgers') as StatementSkipped.detector:
             self.eat_burgers(name)
         with ThreadWeave.only_thread_blocking('eat_fries', 'third_fries') as StatementSkipped.detector:
             self.eat_fries(name)
