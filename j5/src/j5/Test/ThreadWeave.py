@@ -95,3 +95,8 @@ def conditionalcontextmanager(func):
         return ConditionalContextManager(func(*args, **kwds))
     return helper
 
+@conditionalcontextmanager
+def thread_selector(thread_name):
+    if threading.current_thread().thread_name == thread_name:
+        yield
+

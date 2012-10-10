@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Tests ThreadWeave"""
+
 from j5.Test import ThreadWeave
 
 stopper = ThreadWeave.ConditionAvoidance()
