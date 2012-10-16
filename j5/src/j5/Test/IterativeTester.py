@@ -85,11 +85,15 @@ class IterativeTester(object):
             return
 
         def newmeth(self):
-            if self.iterdata.get('_iterativetest_setup_class_failed',None) is not None:
-                e, trace = self.iterdata.get('_iterativetest_setup_class_failed')
-                raise e, None, trace
-            args = cls.getMethodArgs(prefix,varnames)
-            return oldmeth(self,*args)
+            self.setup_iterative_method(getattr(self, newname))
+            try:
+                if self.iterdata.get('_iterativetest_setup_class_failed',None) is not None:
+                    e, trace = self.iterdata.get('_iterativetest_setup_class_failed')
+                    raise e, None, trace
+                args = cls.getMethodArgs(prefix,varnames)
+                return oldmeth(self,*args)
+            finally:
+                self.teardown_iterative_method(getattr(self, newname))
 
         newmeth.func_name = newname
         if oldmeth.func_doc:
@@ -205,7 +209,7 @@ class IterativeTester(object):
         # Brute-force any extra threads to make sure plugins have shut down correctly
         ThreadControl.stop_threads(exclude_threads=[threading.currentThread()])
 
-    def setup_method(self, method):
+    def setup_iterative_method(self, method):
         if hasattr(method, "iterativetestprefix"):
             prefix = method.iterativetestprefix
             varnames = method.iterativetestvarnames
@@ -224,7 +228,7 @@ class IterativeTester(object):
                 setup_method(method,*args)
 
 
-    def teardown_method(self, method):
+    def teardown_iterative_method(self, method):
         if hasattr(method, "iterativetestprefix"):
             prefix = method.iterativetestprefix
             varnames = method.iterativetestvarnames
