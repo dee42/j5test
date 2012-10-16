@@ -11,6 +11,7 @@ from nose import plugins
 import os
 import re
 import sys
+import inspect
 
 def get_default_config(**kwargs):
     """Returns a configuration file set up with our default settings
@@ -62,4 +63,14 @@ def run_tests(loader=None, **kwargs):
         kwargs["argv"] = [sys.argv[0]]
     program = core.TestProgram(**kwargs)
     return program.success
+
+def get_nose_test_name():
+    """To be called from setUp or tearDown - can get the nose test currently running"""
+    setup_frame = inspect.currentframe().f_back
+    # Now back to the test case
+    testcase_frame = setup_frame.f_back.f_back
+    # Now look for self
+    if 'self' not in testcase_frame.f_locals:
+        raise ValueError("Frame %r does not seem to be the test case - nose upgrade?" % testcase_frame)
+    return testcase_frame.f_locals['self'].id()
 
