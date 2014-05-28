@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from j5.Basic import WithContextSkip
+from j5basic import WithContextSkip
 import inspect
 import logging
 import threading

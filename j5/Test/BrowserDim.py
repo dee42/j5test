@@ -2,7 +2,7 @@
 
 from j5.Test import IterativeTester
 from j5.Test import Utils
-from j5.Basic import Decorators
+from j5basic import Decorators
 import sys
 import logging
 import socket

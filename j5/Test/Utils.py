@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from j5.Basic import Decorators
+from j5basic import Decorators
 # import Skipped exception classes from supported frameworks - see Skipped below
 try:
     from py.__.test.outcome import Skipped as PyTestSkipped

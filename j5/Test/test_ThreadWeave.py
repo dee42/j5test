@@ -3,7 +3,7 @@
 import threading
 import time
 from j5.Test import ThreadWeave
-from j5.Basic.WithContextSkip import StatementSkipped
+from j5basic.WithContextSkip import StatementSkipped
 
 class TestTheBoringWay(object):
     def eat_burgers(self, name):
