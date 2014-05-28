@@ -4,7 +4,6 @@
 
 from j5.Test import NoseTests
 import j5.Test
-from j5.OS import ThreadControl
 from j5.Test import SampleNoseTests
 from j5.Test import SampleNoseTestsFailure
 from j5.Test import Utils
