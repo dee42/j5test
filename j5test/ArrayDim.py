@@ -1,4 +1,4 @@
-from j5.Test.IterativeTester import Dimension
+from j5test.IterativeTester import Dimension
 
 class ArrayDim(Dimension):
     """This is a very simple Dimension which just gives the members of an array"""

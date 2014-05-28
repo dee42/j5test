@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from j5.Test import Utils
+from j5test import Utils
 import os
 import sys
 
@@ -197,7 +197,7 @@ def test_conditional_module_missing():
     raise AssertionError("This test should have been skipped with a message about the Badgers module""")
 
 @Utils.method_not_raises(Utils.Skipped)
-@Utils.if_module(Utils, "j5.Test.Utils")
+@Utils.if_module(Utils, "j5test.Utils")
 def test_conditional_module_present():
     """Tests that this test is run..."""
     assert True

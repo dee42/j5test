@@ -34,7 +34,7 @@ def get_named_module_test_loader(path_name):
 
 def get_module_test_loader(base_module):
     """Takes a base module, and returns a loader already loaded with tests, ready for a TestRunner
-    e.g. "import j5.Test.test_NoseTests ; ld = get_package_test_loader(j5)" will get all tests under j5.Test.test_NoseTests"""
+    e.g. "import j5test.test_NoseTests ; ld = get_package_test_loader(j5)" will get all tests under j5test.test_NoseTests"""
     workingDir = os.path.dirname(base_module.__file__)
     basename = os.path.basename(base_module.__file__)
     cfg = get_default_config(workingDir=workingDir)

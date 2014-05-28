@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from j5.Test import IterativeTester
-from j5.Test import Utils
+from j5test import IterativeTester
+from j5test import Utils
 from j5basic import Decorators
 import sys
 import logging

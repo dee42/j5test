@@ -2,11 +2,11 @@
 
 """Test module for nose tests helper"""
 
-from j5.Test import NoseTests
-import j5.Test
-from j5.Test import SampleNoseTests
-from j5.Test import SampleNoseTestsFailure
-from j5.Test import Utils
+from j5test import NoseTests
+import j5test
+from j5test import SampleNoseTests
+from j5test import SampleNoseTestsFailure
+from j5test import Utils
 
 def test_default_config():
     config = NoseTests.get_default_config()
@@ -17,7 +17,7 @@ def test_default_config():
 
 @Utils.if_check(Utils.in_nose_framework, "We can only run the tests using nose if this test tun is being done using nose")
 def test_get_test_loader():
-    loader = NoseTests.get_package_test_loader(j5.Test)
+    loader = NoseTests.get_package_test_loader(j5test)
     suite = loader.loadTestsFromName('.')
     assert suite.countTestCases() > 50
     loader = NoseTests.get_module_test_loader(SampleNoseTests)

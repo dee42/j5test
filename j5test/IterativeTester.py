@@ -6,7 +6,7 @@ __all__ = ['IterativeTester','Dimension']
 import copy
 import sys
 from j5basic import DictUtils
-from j5.Test import Utils
+from j5test import Utils
 try:
     from j5.OS import ThreadControl
 except ImportError as e:

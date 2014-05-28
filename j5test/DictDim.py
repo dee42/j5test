@@ -3,7 +3,7 @@
 
 """Really simple dimension for wrapping a dictionary of resources."""
 
-from j5.Test.IterativeTester import Dimension
+from j5test.IterativeTester import Dimension
 
 class DictDim(Dimension):
     """A *really* simple dimension object for iterating over a dictionary.
