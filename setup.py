@@ -20,7 +20,7 @@ setup(
         'Programming Language :: Python :: 2 :: Only',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    install_requires = ["nose"],
+    install_requires = ["nose", "j5.Basic"],
     extras_require = {
         'LoggingTest':  ["j5.Logging"],
         'ThreadCleanup': ["j5.OS"], #In IterativeTester.py
