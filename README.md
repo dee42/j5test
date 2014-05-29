@@ -1,4 +1,4 @@
-j5.Test
-=======
+j5test
+======
 
-Some testing utilities used by other j5 projects
+Some testing utilities. This library is licensed under the Apache License, Version 2.0.
