@@ -12,7 +12,7 @@ try:
 except ImportError as e:
     ThreadControl = None
 import threading
-from future.utils import with_metaclass
+from six import with_metaclass
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
