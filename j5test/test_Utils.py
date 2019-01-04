@@ -88,7 +88,7 @@ def test_simple_raises_incorrect():
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
-    print str(raised)
+    print(str(raised))
     assert "Call to sample_method did not raise ValueError but raised KeyError: 'Wrong key'" == str(raised)
 
 def test_method_raises_correct():
@@ -126,7 +126,7 @@ def test_method_raises_incorrect():
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
-    print str(raised)
+    print(str(raised))
     assert "Call to sample_decorated_function did not raise ValueError but raised KeyError: 'Wrong key'" == str(raised)
 
 def test_method_not_raises_incorrect():
@@ -141,7 +141,7 @@ def test_method_not_raises_incorrect():
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
-    print str(raised)
+    print(str(raised))
     assert "Call to sample_decorated_function_2 raised KeyError: 'Wrong key'" == str(raised)
 
 def test_skiptest():
