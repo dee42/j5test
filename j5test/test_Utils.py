@@ -43,7 +43,7 @@ def test_secure_tmp_file():
     file, file_name = Utils.secure_tmp_file()
     try:
         assert os.path.exists(file_name)
-        file.write("Contents")
+        file.write("Contents".encode('utf-8'))
         file.close()
         assert os.path.exists(file_name)
         reader = open(file_name, "r")

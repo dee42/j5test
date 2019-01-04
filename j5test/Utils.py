@@ -108,11 +108,14 @@ def if_check(check, check_description=None):
     """A decorator that skips the underlying function if check() doesn't return True"""
     if check_description is None:
         check_description = check.__doc__
+    e = None
+    check_result = None
     try:
         check_result = check()
         check_error = False
-    except Exception as e:
+    except Exception as exc:
         check_error = True
+        e = exc
     if check_error:
         @Decorators.decorator
         def if_check(target, *args, **kwargs):
