@@ -12,6 +12,7 @@ try:
 except ImportError as e:
     ThreadControl = None
 import threading
+from future.utils import with_metaclass
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
@@ -30,7 +31,7 @@ class IterativeTesterMetaClass(type):
         super(IterativeTesterMetaClass, cls).__init__(name, bases, dct)
         cls.makeIterativeTests(dct)
 
-class IterativeTester(object, metaclass=IterativeTesterMetaClass):
+class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
     """
     Parent class for test classes which want to have methods iterated over
     sets of parameters.
