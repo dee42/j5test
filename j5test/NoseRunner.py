@@ -1,5 +1,6 @@
 import nose
 import sys
 
-sys.path.append('.')
-nose.core.main()
+if __name__ == '__main__':
+    sys.path.append('.')
+    nose.core.main()
