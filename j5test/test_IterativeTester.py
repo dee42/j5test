@@ -41,22 +41,27 @@ class TestExample(IterativeTester):
                    'dbonly_test' : [Databases_Dim2()] }
 
     def webdb_test_A(self,webserver,db):
-        print "A", webserver, db
+        print("A", webserver, db)
+
+    # Check existing method
+    def test_A_webA_dbA(self):
+        print("A", "existing webA", "existing dbA")
 
     def webdb_test_B(self,webserver,db):
-        print "B", webserver, db
+        print("B", webserver, db)
 
     def checkdb(self, db):
         assert db == 3
 
     def dbonly_test_C(self,db):
-        print "C", db
+        print("C", db)
         if db != 3:
             assert raises(AssertionError, self.checkdb, db)
         else:
             self.checkdb(db)
 
     def dbonly_test_iterdata(self,db):
+        """Check we copy the docstring with this"""
         assert self.iterdata.db == db
 
     def webdb_test_iterdata(self,web,db):
@@ -74,21 +79,21 @@ class TestExample(IterativeTester):
 
     @classmethod
     def setup_class(cls):
-        print "We expect to find 16 tests"
+        print("We expect to find 16 tests")
         super(TestExample,cls).setup_class()
 
     @classmethod
     def setup_class_webdb_test(cls,webserver,db):
-        print "Setup class:", webserver, db
+        print("Setup class:", webserver, db)
 
     def testSomeOtherThing(self):
         assert True
 
     def setup_method_webdb_test(self, method, webserver, db):
-        print "Setup method for webdb..."
-        print "\t", method.func_name
-        print "\t", method.iterativetestvarnames
-        print "\t", method.iterativetestprefix
+        print("Setup method for webdb...")
+        print("\t", method.__name__)
+        print("\t", method.iterativetestvarnames)
+        print("\t", method.iterativetestprefix)
         self.inwebdb = True
         self.methodname = method.__name__
         self.expectedweb = webserver
@@ -97,12 +102,12 @@ class TestExample(IterativeTester):
         self.iterdata.db = db
 
     def setup_method_dbonly_test(self, method, db):
-        print "Setup method for dbonly..."
-        print "\t", method.iterativetestprefix
+        print("Setup method for dbonly...")
+        print("\t", method.iterativetestprefix)
         self.iterdata.db = db
 
     def teardown_method_webdb_test(self, method, webserver, db):
-        print "Teardown method for webdb..."
+        print("Teardown method for webdb...")
         self.inwebdb = False
         self.methodname = None
         self.expectedweb = None

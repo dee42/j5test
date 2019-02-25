@@ -35,7 +35,7 @@ def detect_framework(starting_frame=None):
         frame = frame.f_back
         framework = detect_frame_framework(frame)
         if framework:
-            print "detected test framework %s at frame %d" % (framework, n)
+            print("detected test framework %s at frame %d" % (framework, n))
             return framework
     return None
 
@@ -108,11 +108,14 @@ def if_check(check, check_description=None):
     """A decorator that skips the underlying function if check() doesn't return True"""
     if check_description is None:
         check_description = check.__doc__
+    e = None
+    check_result = None
     try:
         check_result = check()
         check_error = False
-    except Exception as e:
+    except Exception as exc:
         check_error = True
+        e = exc
     if check_error:
         @Decorators.decorator
         def if_check(target, *args, **kwargs):
@@ -228,7 +231,7 @@ def contains_expected_kwargs(**match_kwargs):
     """A checker that checks if the given kwargs are present with the given values"""
     def check_expected_kwargs(target, *args, **kwargs):
         args_present = {}
-        for kw, expected_value in match_kwargs.iteritems():
+        for kw, expected_value in match_kwargs.items():
             actual_value = Decorators.get_or_pop_arg(kw, args, kwargs, Decorators.inspect.getargspec(target))
             if actual_value != expected_value:
                 return False
