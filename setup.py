@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='j5test',
-    version='1.1',
+    version='1.2',
     packages=['j5test'],
     license='Apache License, Version 2.0',
     description='Some testing utilities used by other j5 projects.',
