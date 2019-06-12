@@ -103,6 +103,10 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         newmeth.__dict__ = oldmeth.__dict__.copy()
         newmeth.iterativetestprefix = prefix
         newmeth.iterativetestvarnames = varnames
+        for k in dir(oldmeth):
+            if not k.startswith("__"):
+                setattr(newmeth, k, getattr(oldmeth, k))
+
 
         setattr(cls,newname,newmeth)
 
