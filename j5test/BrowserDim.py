@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import *
 from j5test import IterativeTester
 from j5test import Utils
 from j5basic import Decorators
@@ -67,7 +75,7 @@ class BrowserDim(IterativeTester.Dimension):
         # this is designed specifically for j5.Control.test_WebServer
         web_dimension = frame.f_back.f_locals["dims"][0]
         self.browser_urls = {}
-        for web_config_name in web_dimension.configs.keys():
+        for web_config_name in list(web_dimension.configs.keys()):
             web_config = web_dimension.configs[web_config_name]
             app_config = web_config.get_rootnode()[web_dimension.application]
             app_web_config = app_config.get_value(web_config.get_path(), {})
@@ -116,7 +124,7 @@ class BrowserDim(IterativeTester.Dimension):
 
     def teardown(self):
         """stops any running browsers"""
-        for browsername, web_config_name in self._selenium_runners.keys():
+        for browsername, web_config_name in list(self._selenium_runners.keys()):
             selenium = self._selenium_runners.pop((browsername, web_config_name))
             if isinstance(selenium, Utils.Skipped):
                 pass

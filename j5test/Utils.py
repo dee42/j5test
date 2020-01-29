@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import *
 from j5basic import Decorators
 # import Skipped exception classes from supported frameworks - see Skipped below
 try:
@@ -229,7 +236,7 @@ def contains_expected_kwargs(**match_kwargs):
     """A checker that checks if the given kwargs are present with the given values"""
     def check_expected_kwargs(target, *args, **kwargs):
         args_present = {}
-        for kw, expected_value in match_kwargs.iteritems():
+        for kw, expected_value in match_kwargs.items():
             actual_value = Decorators.get_or_pop_arg(kw, args, kwargs, Decorators.inspect.getargspec(target))
             if actual_value != expected_value:
                 return False

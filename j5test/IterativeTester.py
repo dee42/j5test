@@ -2,6 +2,15 @@
 # Copyright 2006 St James Software
 
 from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import *
+from builtins import object
+from future.utils import with_metaclass
 __all__ = ['IterativeTester','Dimension']
 
 import copy
@@ -31,13 +40,11 @@ class IterativeTesterMetaClass(type):
         super(IterativeTesterMetaClass, cls).__init__(name, bases, dct)
         cls.makeIterativeTests(dct)
 
-class IterativeTester(object):
+class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
     """
     Parent class for test classes which want to have methods iterated over
     sets of parameters.
     """
-
-    __metaclass__ = IterativeTesterMetaClass
 
     # Dictionary defining iterative tests. Keys are the prefixes of the
     # methods to be iterated with different parameters. Values are arrays
@@ -59,9 +66,9 @@ class IterativeTester(object):
         dicts = [getattr(basecls,"__dict__",{}) for basecls in cls.__mro__ if not basecls is cls]
         dicts.insert(0,dct)
 
-        for prefix in cls.DIMENSIONS.keys():
+        for prefix in list(cls.DIMENSIONS.keys()):
             for clsdct in dicts:
-                for methname, meth in clsdct.iteritems():
+                for methname, meth in clsdct.items():
                     if methname.startswith(prefix) and callable(meth):
                         cls.makeIterativeTestsForMethod(prefix,methname,meth)
 
@@ -111,7 +118,7 @@ class IterativeTester(object):
     @classmethod
     def makeFailedConditionTestsForDim(cls, prefix, dim):
         failed_conditions = dim.getFailedConditions()
-        for name, message in failed_conditions.iteritems():
+        for name, message in failed_conditions.items():
             cls.createFailMessageTest(prefix, name, message)
 
     @classmethod
@@ -132,7 +139,7 @@ class IterativeTester(object):
     @classmethod
     def makeSkippedConditionTestsForDim(cls, prefix, dim):
         skipped_conditions = dim.getSkippedConditions()
-        for name, message in skipped_conditions.iteritems():
+        for name, message in skipped_conditions.items():
             cls.createSkipMessageTest(prefix, name, message)
 
     @classmethod
@@ -160,7 +167,7 @@ class IterativeTester(object):
 
     @classmethod
     def setup_class(cls):
-        for prefix, dims in cls.DIMENSIONS.iteritems():
+        for prefix, dims in cls.DIMENSIONS.items():
             # call dim setup methods
             for dim in dims:
                 dim.setup()
@@ -185,7 +192,7 @@ class IterativeTester(object):
 
     @classmethod
     def teardown_class(cls):
-        for prefix, dims in cls.DIMENSIONS.iteritems():
+        for prefix, dims in cls.DIMENSIONS.items():
             # call prefix's class teardown methods
             teardownmeth = getattr(cls,"teardown_class_" + prefix,None)
             if callable(teardownmeth):
@@ -267,7 +274,7 @@ class Dimension(object):
         """Return the names of the resources this Dimension object holds.
            Must be callable as soon as the object has been created.
         """
-        return self._resources.keys()
+        return list(self._resources.keys())
 
     def getValue(self,name):
         """Return the value of a named resource.
