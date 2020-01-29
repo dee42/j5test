@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name='j5test',
-    version='1.1',
+    version='1.3',
     packages=['j5test'],
     license='Apache License, Version 2.0',
     description='Some testing utilities used by other j5 projects.',
@@ -28,7 +28,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Testing',
     ],
-    install_requires = ["nose", "j5basic"],
+    install_requires = ["nose", "j5basic", "future"],
     extras_require = {
         'LoggingTest':  ["j5.Logging"],
         'IterativeTester-ThreadCleanup': ["j5.OS"],
