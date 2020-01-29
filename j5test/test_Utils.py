@@ -43,7 +43,7 @@ def test_secure_tmp_file():
     file, file_name = Utils.secure_tmp_file()
     try:
         assert os.path.exists(file_name)
-        file.write("Contents".encode('utf-8'))
+        file.write("Contents")
         file.close()
         assert os.path.exists(file_name)
         reader = open(file_name, "r")
@@ -88,7 +88,7 @@ def test_simple_raises_incorrect():
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
-    print(str(raised))
+    print str(raised)
     assert "Call to sample_method did not raise ValueError but raised KeyError: 'Wrong key'" == str(raised)
 
 def test_method_raises_correct():
@@ -126,7 +126,7 @@ def test_method_raises_incorrect():
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
-    print(str(raised))
+    print str(raised)
     assert "Call to sample_decorated_function did not raise ValueError but raised KeyError: 'Wrong key'" == str(raised)
 
 def test_method_not_raises_incorrect():
@@ -141,7 +141,7 @@ def test_method_not_raises_incorrect():
         raised = e
     assert returned is None
     assert isinstance(raised, AssertionError)
-    print(str(raised))
+    print str(raised)
     assert "Call to sample_decorated_function_2 raised KeyError: 'Wrong key'" == str(raised)
 
 def test_skiptest():

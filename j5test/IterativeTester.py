@@ -12,7 +12,6 @@ try:
 except ImportError as e:
     ThreadControl = None
 import threading
-from six import with_metaclass
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
@@ -31,11 +30,13 @@ class IterativeTesterMetaClass(type):
         super(IterativeTesterMetaClass, cls).__init__(name, bases, dct)
         cls.makeIterativeTests(dct)
 
-class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
+class IterativeTester(object):
     """
     Parent class for test classes which want to have methods iterated over
     sets of parameters.
     """
+
+    __metaclass__ = IterativeTesterMetaClass
 
     # Dictionary defining iterative tests. Keys are the prefixes of the
     # methods to be iterated with different parameters. Values are arrays
@@ -57,9 +58,9 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         dicts = [getattr(basecls,"__dict__",{}) for basecls in cls.__mro__ if not basecls is cls]
         dicts.insert(0,dct)
 
-        for prefix in list(cls.DIMENSIONS.keys()):
+        for prefix in cls.DIMENSIONS.keys():
             for clsdct in dicts:
-                for methname, meth in clsdct.items():
+                for methname, meth in clsdct.iteritems():
                     if methname.startswith(prefix) and callable(meth):
                         cls.makeIterativeTestsForMethod(prefix,methname,meth)
 
@@ -83,7 +84,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         newname = "test" + oldmethname[len(prefix):] + "_" + "_".join(varnames)
 
         # don't overwrite existing methods
-        if newname in cls.__dict__:
+        if cls.__dict__.has_key(newname):
             return
 
         def newmeth(self):
@@ -91,29 +92,25 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
             try:
                 if self.iterdata.get('_iterativetest_setup_class_failed',None) is not None:
                     e, trace = self.iterdata.get('_iterativetest_setup_class_failed')
-                    raise e.with_traceback(trace)
+                    raise e, None, trace
                 args = cls.getMethodArgs(prefix,varnames)
                 return oldmeth(self,*args)
             finally:
                 self.teardown_iterative_method(getattr(self, newname))
 
-        newmeth.__name__ = newname
-        if oldmeth.__doc__:
-            newmeth.__doc__ = oldmeth.__doc__ + " (%s)" % (", ".join(varnames),)
-        newmeth.__dict__ = oldmeth.__dict__.copy()
+        newmeth.func_name = newname
+        if oldmeth.func_doc:
+            newmeth.func_doc = oldmeth.func_doc + " (%s)" % (", ".join(varnames),)
+        newmeth.func_dict = oldmeth.func_dict.copy()
         newmeth.iterativetestprefix = prefix
         newmeth.iterativetestvarnames = varnames
-        for k in dir(oldmeth):
-            if not k.startswith("__"):
-                setattr(newmeth, k, getattr(oldmeth, k))
-
 
         setattr(cls,newname,newmeth)
 
     @classmethod
     def makeFailedConditionTestsForDim(cls, prefix, dim):
         failed_conditions = dim.getFailedConditions()
-        for name, message in failed_conditions.items():
+        for name, message in failed_conditions.iteritems():
             cls.createFailMessageTest(prefix, name, message)
 
     @classmethod
@@ -124,17 +121,17 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         newname = "test_"+prefix+"_"+conditionname
 
         def failmeth(self):
-            print(message)
+            print message
             assert False
 
-        failmeth.__name__ = newname
+        failmeth.func_name = newname
 
         setattr(cls, newname, failmeth)
 
     @classmethod
     def makeSkippedConditionTestsForDim(cls, prefix, dim):
         skipped_conditions = dim.getSkippedConditions()
-        for name, message in skipped_conditions.items():
+        for name, message in skipped_conditions.iteritems():
             cls.createSkipMessageTest(prefix, name, message)
 
     @classmethod
@@ -147,7 +144,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         def skipmeth(self):
             Utils.skip(message)
 
-        skipmeth.__name__ = newname
+        skipmeth.func_name = newname
 
         setattr(cls, newname, skipmeth)
 
@@ -162,7 +159,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
 
     @classmethod
     def setup_class(cls):
-        for prefix, dims in cls.DIMENSIONS.items():
+        for prefix, dims in cls.DIMENSIONS.iteritems():
             # call dim setup methods
             for dim in dims:
                 dim.setup()
@@ -187,7 +184,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
 
     @classmethod
     def teardown_class(cls):
-        for prefix, dims in cls.DIMENSIONS.items():
+        for prefix, dims in cls.DIMENSIONS.iteritems():
             # call prefix's class teardown methods
             teardownmeth = getattr(cls,"teardown_class_" + prefix,None)
             if callable(teardownmeth):
@@ -269,7 +266,7 @@ class Dimension(object):
         """Return the names of the resources this Dimension object holds.
            Must be callable as soon as the object has been created.
         """
-        return list(self._resources.keys())
+        return self._resources.keys()
 
     def getValue(self,name):
         """Return the value of a named resource.
