@@ -8,6 +8,7 @@ from future import standard_library
 standard_library.install_aliases()
 from builtins import str
 from builtins import *
+from future.utils import text_to_native_str
 from j5test import Utils
 import os
 import sys
@@ -19,24 +20,24 @@ class SubvalueError(ValueError):
 
 def sample_method(option):
     if option == 1:
-        return "pigeons"
+        return text_to_native_str("pigeons")
     elif option == 2:
-        raise ValueError("Wrong value")
+        raise ValueError(text_to_native_str("Wrong value"))
     elif option == 3:
-        raise SubvalueError("Wrong subvalue")
+        raise SubvalueError(text_to_native_str("Wrong subvalue"))
     elif option == 4:
-        raise KeyError("Wrong key")
+        raise KeyError(text_to_native_str("Wrong key"))
 
 @Utils.method_raises(ValueError)
 def sample_decorated_function(option):
     if option == 1:
-        return "pigeons"
+        return text_to_native_str("pigeons")
     elif option == 2:
-        raise ValueError("Wrong value")
+        raise ValueError(text_to_native_str("Wrong value"))
     elif option == 3:
-        raise SubvalueError("Wrong subvalue")
+        raise SubvalueError(text_to_native_str("Wrong subvalue"))
     elif option == 4:
-        raise KeyError("Wrong key")
+        raise KeyError(text_to_native_str("Wrong key"))
 
 @Utils.method_not_raises(KeyError)
 def sample_decorated_function_2(option):
