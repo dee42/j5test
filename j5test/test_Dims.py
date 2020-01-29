@@ -5,9 +5,9 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import *
-import nose
-import sys
+from j5test import ArrayDim, BrowserDim, DictDim
 
-if __name__ == '__main__':
-    sys.path.append('.')
-    nose.core.main()
+def test_array_dim():
+    array_dim = ArrayDim.ArrayDim(['A', 'B', 'C'])
+    browser_dim = BrowserDim.BrowserDim()
+    dict_dim = DictDim.DictDim({'A': 1, 'B': 2, 'C': 3})

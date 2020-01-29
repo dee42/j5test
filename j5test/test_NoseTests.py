@@ -14,6 +14,7 @@ import j5test
 from j5test import SampleNoseTests
 from j5test import SampleNoseTestsFailure
 from j5test import Utils
+from j5test import NoseRunner
 
 def test_default_config():
     config = NoseTests.get_default_config()
@@ -46,4 +47,5 @@ def test_run_tests_fails_on_error():
     suite = loader.loadTestsFromName(SampleNoseTestsFailure.__name__)
     assert suite.countTestCases() == 1
     assert not NoseTests.run_tests(suite=suite)
+    assert NoseTests.get_nose_test_name()
 

@@ -48,7 +48,7 @@ def sample_decorated_function_2(option):
 # here are the actual tests
 
 def test_secure_tmp_file():
-    file, file_name = Utils.secure_tmp_file()
+    file, file_name = Utils.secure_tmp_file(text=True)
     try:
         assert os.path.exists(file_name)
         file.write("Contents")

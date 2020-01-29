@@ -51,6 +51,10 @@ class TestExample(IterativeTester):
     def webdb_test_A(self,webserver,db):
         print("A", webserver, db)
 
+    # Check existing method
+    def test_A_webA_dbA(self):
+        print("A", "existing webA", "existing dbA")
+
     def webdb_test_B(self,webserver,db):
         print("B", webserver, db)
 
@@ -65,6 +69,7 @@ class TestExample(IterativeTester):
             self.checkdb(db)
 
     def dbonly_test_iterdata(self,db):
+        """Check we copy the docstring with this"""
         assert self.iterdata.db == db
 
     def webdb_test_iterdata(self,web,db):
