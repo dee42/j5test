@@ -119,7 +119,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         newmeth.iterativetestprefix = prefix
         newmeth.iterativetestvarnames = varnames
         for k in dir(oldmeth):
-            if k not in builtin_function_attrs:
+            if k not in builtin_function_attrs and not k.startswith('__'):
                 setattr(newmeth, k, getattr(oldmeth, k))
         setattr(cls,newname,newmeth)
 
