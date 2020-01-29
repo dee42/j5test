@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 from j5basic import Decorators
 # import Skipped exception classes from supported frameworks - see Skipped below
 try:
@@ -35,7 +36,7 @@ def detect_framework(starting_frame=None):
         frame = frame.f_back
         framework = detect_frame_framework(frame)
         if framework:
-            print "detected test framework %s at frame %d" % (framework, n)
+            print("detected test framework %s at frame %d" % (framework, n))
             return framework
     return None
 

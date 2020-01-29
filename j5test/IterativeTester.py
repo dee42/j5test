@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2006 St James Software
 
+from __future__ import print_function
 __all__ = ['IterativeTester','Dimension']
 
 import copy
@@ -84,7 +85,7 @@ class IterativeTester(object):
         newname = "test" + oldmethname[len(prefix):] + "_" + "_".join(varnames)
 
         # don't overwrite existing methods
-        if cls.__dict__.has_key(newname):
+        if newname in cls.__dict__:
             return
 
         def newmeth(self):
@@ -92,16 +93,16 @@ class IterativeTester(object):
             try:
                 if self.iterdata.get('_iterativetest_setup_class_failed',None) is not None:
                     e, trace = self.iterdata.get('_iterativetest_setup_class_failed')
-                    raise e, None, trace
+                    raise e.with_traceback(trace)
                 args = cls.getMethodArgs(prefix,varnames)
                 return oldmeth(self,*args)
             finally:
                 self.teardown_iterative_method(getattr(self, newname))
 
-        newmeth.func_name = newname
-        if oldmeth.func_doc:
-            newmeth.func_doc = oldmeth.func_doc + " (%s)" % (", ".join(varnames),)
-        newmeth.func_dict = oldmeth.func_dict.copy()
+        newmeth.__name__ = newname
+        if oldmeth.__doc__:
+            newmeth.__doc__ = oldmeth.__doc__ + " (%s)" % (", ".join(varnames),)
+        newmeth.__dict__ = oldmeth.__dict__.copy()
         newmeth.iterativetestprefix = prefix
         newmeth.iterativetestvarnames = varnames
 
@@ -121,10 +122,10 @@ class IterativeTester(object):
         newname = "test_"+prefix+"_"+conditionname
 
         def failmeth(self):
-            print message
+            print(message)
             assert False
 
-        failmeth.func_name = newname
+        failmeth.__name__ = newname
 
         setattr(cls, newname, failmeth)
 
@@ -144,7 +145,7 @@ class IterativeTester(object):
         def skipmeth(self):
             Utils.skip(message)
 
-        skipmeth.func_name = newname
+        skipmeth.__name__ = newname
 
         setattr(cls, newname, skipmeth)
 
