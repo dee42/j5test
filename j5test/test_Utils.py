@@ -42,9 +42,9 @@ def sample_decorated_function(option):
 @Utils.method_not_raises(KeyError)
 def sample_decorated_function_2(option):
     if option == 1:
-        return "pigeons"
+        return text_to_native_str("pigeons")
     elif option == 4:
-        raise KeyError("Wrong key")
+        raise KeyError(text_to_native_str("Wrong key"))
 
 # here are the actual tests
 
