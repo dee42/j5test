@@ -140,7 +140,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
             print(message)
             assert False
 
-        failmeth.__name__ = newname
+        failmeth.__name__ = text_to_native_str(newname)
 
         setattr(cls, newname, failmeth)
 
@@ -160,7 +160,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         def skipmeth(self):
             Utils.skip(message)
 
-        skipmeth.__name__ = newname
+        skipmeth.__name__ = text_to_native_str(newname)
 
         setattr(cls, newname, skipmeth)
 
