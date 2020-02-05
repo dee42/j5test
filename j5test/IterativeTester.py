@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 # Copyright 2006 St James Software
 
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import *
+from builtins import object
+from future.utils import with_metaclass
 __all__ = ['IterativeTester','Dimension']
 
 import copy
@@ -12,7 +22,7 @@ try:
 except ImportError as e:
     ThreadControl = None
 import threading
-from six import with_metaclass
+from future.utils import text_to_native_str
 
 def combinations(*args):
     """Generate all combinations of items from argument lists.
@@ -30,6 +40,11 @@ class IterativeTesterMetaClass(type):
            py.test knows can find them as soon as the module is loaded."""
         super(IterativeTesterMetaClass, cls).__init__(name, bases, dct)
         cls.makeIterativeTests(dct)
+
+def __dummy_function(*args, **kwargs):
+    pass
+
+builtin_function_attrs = dir(__dummy_function)
 
 class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
     """
@@ -97,17 +112,15 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
             finally:
                 self.teardown_iterative_method(getattr(self, newname))
 
-        newmeth.__name__ = newname
+        newmeth.__name__ = text_to_native_str(newname)
         if oldmeth.__doc__:
             newmeth.__doc__ = oldmeth.__doc__ + " (%s)" % (", ".join(varnames),)
         newmeth.__dict__ = oldmeth.__dict__.copy()
         newmeth.iterativetestprefix = prefix
         newmeth.iterativetestvarnames = varnames
         for k in dir(oldmeth):
-            if not k.startswith("__"):
+            if k not in builtin_function_attrs and not k.startswith('__'):
                 setattr(newmeth, k, getattr(oldmeth, k))
-
-
         setattr(cls,newname,newmeth)
 
     @classmethod
@@ -127,7 +140,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
             print(message)
             assert False
 
-        failmeth.__name__ = newname
+        failmeth.__name__ = text_to_native_str(newname)
 
         setattr(cls, newname, failmeth)
 
@@ -147,7 +160,7 @@ class IterativeTester(with_metaclass(IterativeTesterMetaClass, object)):
         def skipmeth(self):
             Utils.skip(message)
 
-        skipmeth.__name__ = newname
+        skipmeth.__name__ = text_to_native_str(newname)
 
         setattr(cls, newname, skipmeth)
 
